@@ -1,0 +1,1156 @@
+1. infix to post
+#include<iostream>
+#include<stack>
+#include<vector>
+using namespace std;
+
+int order_value(char c)
+{
+    if(c == '^')
+        return 3;
+    else if(c == '/' || c == '*')
+        return 2;
+    else if(c == '+' || c == '-')
+        return 1;
+    else
+        return -1;
+}
+
+string input_string_to_postfix(string input_string)
+{
+    stack<char> dabba;
+    string jawab;
+    
+    for(int i = 0; i < input_string.length(); i++)
+    {
+        if((input_string[i] >= 'a' && input_string[i] <= 'z') || (input_string[i] >= 'A' && input_string[i] <= 'Z'))
+            jawab += input_string[i];
+        else if(input_string[i] == '(')
+        {
+            dabba.push(input_string[i]);
+        }
+        else if(input_string[i] == ')')
+        {
+            while(!dabba.empty() && dabba.top() != '(')
+            {
+                jawab += dabba.top();
+                dabba.pop();
+            }
+            if(!dabba.empty())
+            {
+                dabba.pop();
+            }
+        }
+        else
+        {
+            while(!dabba.empty() && order_value(dabba.top()) >= order_value(input_string[i]))
+            {
+                if(input_string[i] == '^' && dabba.top() == '^')
+                    break;
+                jawab += dabba.top();
+                dabba.pop();
+            }
+            dabba.push(input_string[i]);
+        }
+    }
+    while(!dabba.empty())
+    {
+        jawab += dabba.top();
+        dabba.pop();
+    }
+    
+    return jawab;
+}
+
+int main()
+{
+    string s;
+    cout << "Enter the input_string string: ";
+    cin >> s;
+    cout << "Postfix expression: " << input_string_to_postfix(s) << endl;
+    
+    return 0;
+}
+
+
+
+
+2. if else
+#include<iostream>
+using namespace std;
+int main()
+{
+    int choice;
+    cout<<"enter 1 for default input value and 2 for dynamic value"<<"\n";
+    cin>>choice;
+
+    if(choice == 1)
+    {
+        int input = 0;
+        if(input != 0)
+        {
+            int answer = 22/input;
+            cout<<"Input is valid"<<"\n";
+            cout<<answer;
+        }
+        else
+        cout<<"Input is not valid"<<"\n";
+    }
+
+    else
+    {
+        cout<<"enter the value of input   ";
+        int input;
+        cin>>input;
+        if(input != 0)
+        {
+            int answer = 22/input;
+            cout<<"Input is valid"<<"\n";
+            cout<<answer;
+        }
+        else
+        cout<<"Input is not valid"<<"\n";  
+    }
+    return 0;
+}
+
+
+
+
+
+
+3. arithmetic check
+#include <iostream>
+#include <stack>
+#include <string>
+#include <vector>
+#include <cctype>
+
+using namespace std;
+
+// Function to check if a character is an operator
+bool isOperator(char ch)
+{
+    return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '=';
+}
+
+// Function to validate the equation
+bool isValidEquation(const string &equation)
+{
+    stack<char> brackets;
+    bool hasEqualSign = false;
+
+    for (size_t i = 0; i < equation.length(); ++i)
+    {
+        char ch = equation[i];
+
+        // Check for valid characters
+        if (!isalnum(ch) && !isOperator(ch) && ch != ' ' && ch != '(' && ch != ')')
+        {
+            return false;
+        }
+
+        // Handle brackets
+        if (ch == '(')
+        {
+            brackets.push(ch);
+        }
+        else if (ch == ')')
+        {
+            if (brackets.empty() || brackets.top() != '(')
+            {
+                return false; // Unmatched closing bracket
+            }
+            brackets.pop();
+        }
+
+        // Check for equal sign
+        if (ch == '=')
+        {
+            if (hasEqualSign)
+            {
+                return false; // Multiple '=' are not allowed
+            }
+            hasEqualSign = true;
+        }
+    }
+
+    // Equation is valid if brackets are balanced and there is one '='
+    return brackets.empty() && hasEqualSign;
+}
+
+// Function to extract identifiers and operators
+void extractIdentifiersAndOperators(const string &equation, vector<string> &identifiers, vector<char> &operators)
+{
+    string currentIdentifier = "";
+
+    for (char ch : equation)
+    {
+        if (isalnum(ch))
+        {
+            currentIdentifier += ch; // Build identifier
+        }
+        else
+        {
+            if (!currentIdentifier.empty())
+            {
+                identifiers.push_back(currentIdentifier);
+                currentIdentifier.clear();
+            }
+            if (isOperator(ch))
+            {
+                operators.push_back(ch);
+            }
+        }
+    }
+
+    // Add the last identifier, if any
+    if (!currentIdentifier.empty())
+    {
+        identifiers.push_back(currentIdentifier);
+    }
+}
+
+int main()
+{
+    vector<string> predefinedEquations = {
+        "(m / n) + p = q",
+        "(a+b) * (c/d) = q"};
+
+    cout << "Choose input method:\n";
+    cout << "1. User-defined equation\n";
+    cout << "2. Predefined equation\n";
+    cout << "Enter your choice (1 or 2): ";
+
+    int choice;
+    cin >> choice;
+    cin.ignore(); // Ignore leftover newline
+
+    string equation;
+    if (choice == 1)
+    {
+        cout << "Enter your equation: ";
+        getline(cin, equation);
+    }
+    else if (choice == 2)
+    {
+        cout << "Available predefined equations:\n";
+        for (size_t i = 0; i < predefinedEquations.size(); ++i)
+        {
+            cout << i + 1 << ". " << predefinedEquations[i] << "\n";
+        }
+        cout << "Choose a predefined equation (1 or 2): ";
+        int index;
+        cin >> index;
+        if (index < 1 || index > predefinedEquations.size())
+        {
+            cout << "Invalid choice!\n";
+            return 1;
+        }
+        equation = predefinedEquations[index - 1];
+    }
+    else
+    {
+        cout << "Invalid choice!\n";
+        return 1;
+    }
+
+    cout << "\nEquation: " << equation << "\n";
+
+    // Validate equation
+    if (isValidEquation(equation))
+    {
+        cout << "The equation is valid.\n";
+
+        vector<string> identifiers;
+        vector<char> operators;
+        extractIdentifiersAndOperators(equation, identifiers, operators);
+
+        cout << "Identifiers: ";
+        for (const string &id : identifiers)
+        {
+            cout << id << " ";
+        }
+        cout << "\n";
+
+        cout << "Operators: ";
+        for (char op : operators)
+        {
+            cout << op << " ";
+        }
+        cout << "\n";
+    }
+    else
+    {
+        cout << "The equation is invalid.\n";
+    }
+
+    return 0;
+}
+
+
+
+
+4.3 Add
+#include <iostream>
+#include <stack>
+#include <string>
+#include <cctype>
+
+using namespace std;
+
+string GivingTAC(int number)
+{
+    return "t" + to_string(number);
+}
+
+bool isOperator(char c)
+{
+    return (c == '+' || c == '-' || c == '*' || c == '/');
+}
+
+void ProcessLine(const string &line)
+{
+    int tempCount = 0;
+    string lhs, rhs;
+
+    lhs = line.substr(0, line.find("=") - 1);
+    rhs = line.substr(line.find("=") + 2);
+
+    cout << "Input: " << line << endl;
+
+    stack<string> operands;
+    stack<char> operators;
+
+    bool expectUnary = true;
+
+    for (int i = 0; i < rhs.size(); ++i)
+    {
+        if (isalpha(rhs[i]) || isdigit(rhs[i]))
+        {
+            string operand;
+            while (i < rhs.size() && (isalnum(rhs[i]) || rhs[i] == '_'))
+            {
+                operand += rhs[i++];
+            }
+            --i;
+            operands.push(operand);
+            expectUnary = false;
+        }
+        else if (isOperator(rhs[i]))
+        {
+            if (expectUnary && (rhs[i] == '+' || rhs[i] == '-'))
+            {
+                string operand;
+                operand += rhs[i];
+                i++;
+                while (i < rhs.size() && (isalnum(rhs[i]) || rhs[i] == '_'))
+                {
+                    operand += rhs[i++];
+                }
+                --i;
+                operands.push(operand);
+                expectUnary = false;
+            }
+            else
+            {
+                while (!operators.empty() && operators.top() >= rhs[i])
+                {
+                    char op = operators.top();
+                    operators.pop();
+
+                    string op2 = operands.top();
+                    operands.pop();
+                    string op1 = operands.top();
+                    operands.pop();
+
+                    string tempVar = GivingTAC(++tempCount);
+                    cout << tempVar << " = " << op1 << " " << op << " " << op2 << endl;
+
+                    operands.push(tempVar);
+                }
+                operators.push(rhs[i]);
+                expectUnary = true;
+            }
+        }
+    }
+    while (!operators.empty())
+    {
+        char op = operators.top();
+        operators.pop();
+
+        string op2 = operands.top();
+        operands.pop();
+        string op1 = operands.top();
+        operands.pop();
+
+        string tempVar = GivingTAC(++tempCount);
+        cout << tempVar << " = " << op1 << " " << op << " " << op2 << endl;
+
+        operands.push(tempVar);
+    }
+
+    cout << lhs << " = " << operands.top() << endl
+         << endl;
+}
+
+int main()
+{
+    bool choice;
+    cout << "Enter 1 for user-defined input, 0 for predefined input: ";
+    cin >> choice;
+
+    string input;
+
+    if (choice)
+    {
+        cout << "Enter your expressions separated by ';': ";
+        cin.ignore(); // To ignore newline after entering choice
+        getline(cin, input);
+    }
+    else
+    {
+        // Example input containing unary expressions
+        input = "a = -b + c * d - e; x = y + z * 2; p = p++;";
+    }
+
+    size_t pos = 0;
+    while ((pos = input.find(';')) != string::npos)
+    {
+        string line = input.substr(0, pos);
+        if (!line.empty())
+        {
+            ProcessLine(line);
+        }
+        input.erase(0, pos + 1);
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+5. lex
+#include <iostream>
+#include <string>
+#include <cctype>
+using namespace std;
+
+int total_keywords = 0;
+int total_identifiers = 0;
+int total_operators = 0;
+int total_specialOp = 0;
+int total_numbers = 0;
+int total_unrecognized = 0;
+
+bool isArithmeticOperator(char c)
+{
+    return (c == '+' || c == '-' || c == '/' || c == '*' || c == '%');
+}
+
+bool isMultiArithmeticOperator(const string &op)
+{
+    return (op == "++" || op == "--" || op == "+=" || op == "-=" || op == "*=" || op == "/=" || op == "%=");
+}
+
+bool isLogicalOperator(char c)
+{
+    return (c == '&' || c == '|' || c == '!');
+}
+
+bool isMultiLogicalOperator(const string &op)
+{
+    return (op == "&&" || op == "||");
+}
+
+bool isRelationalOperator(char c)
+{
+    return (c == '<' || c == '>');
+}
+
+bool isMultiRelationalOperator(const string &op)
+{
+    return (op == "==" || op == "<=" || op == ">=");
+}
+
+bool isBitwiseOperator(char c)
+{
+    return (c == '^' || c == '~');
+}
+
+bool isKeyword(const string &op)
+{
+    return (op == "else" || op == "if" || op == "while" || op == "do" || op == "float" || op == "int" ||
+            op == "string" || op == "char" || op == "continue" || op == "break" || op == "double" ||
+            op == "short" || op == "struct" || op == "long" || op == "for" || op == "printf" || op == "scanf");
+}
+
+bool isIdentifier(const string &token)
+{
+    if (isdigit(token[0]))
+        return false;
+    for (char c : token)
+    {
+        if (!isalnum(c) && c != '_')
+            return false;
+    }
+    return true;
+}
+
+bool isNumber(const string &token)
+{
+    int dot_count = 0;
+    for (char c : token)
+    {
+        if (c == '.')
+        {
+            dot_count++;
+            if (dot_count > 1)
+                return false;
+        }
+        else if (!isdigit(c))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isSpecialSymbol(char c)
+{
+    return (c == ',' || c == ';');
+}
+
+bool isAssignment(char c)
+{
+    return (c == '=');
+}
+
+void LexicalAnalyser(const string &line)
+{
+    string token;
+
+    for (size_t i = 0; i < line.length(); ++i)
+    {
+        char ch = line[i];
+
+        // Skip whitespace
+        if (isspace(ch))
+            continue;
+
+        // Handle separators (comma and semicolon)
+        if (ch == ',' || ch == ';')
+        {
+            cout << ch << " is a statement terminator\n";
+            total_specialOp++;
+            continue;
+        }
+
+        // Handle operators and delimiters
+        if (isArithmeticOperator(ch) || isLogicalOperator(ch) || isRelationalOperator(ch) || isAssignment(ch))
+        {
+            cout << ch << " is an operator\n";
+            total_operators++;
+            continue;
+        }
+
+        // Build token
+        token.clear();
+        while (i < line.length() && (isalnum(line[i]) || line[i] == '_'))
+        {
+            token += line[i];
+            i++;
+        }
+        i--;
+
+        // Determine token type
+        if (isKeyword(token))
+        {
+            cout << token << " is a keyword\n";
+            total_keywords++;
+        }
+        else if (isIdentifier(token))
+        {
+            cout << token << " is an identifier\n";
+            total_identifiers++;
+        }
+        else if (isNumber(token))
+        {
+            cout << token << " is a number\n";
+            total_numbers++;
+        }
+        else
+        {
+            cout << token << " is unrecognized\n";
+            total_unrecognized++;
+        }
+    }
+}
+
+int main()
+{
+    string code;
+    int inputChoice;
+
+    cout << "Choose input method:\n";
+    cout << "1. User-defined input\n";
+    cout << "2. Predefined input\n";
+    cout << "Enter your choice: ";
+    cin >> inputChoice;
+    cin.ignore(); // Clear input buffer
+
+    if (inputChoice == 1)
+    {
+        cout << "Enter the code to analyze (terminate with an empty line):\n";
+        string line;
+        while (true)
+        {
+            getline(cin, line);
+            if (line.empty())
+                break;
+            code += line + '\n';
+        }
+    }
+    else if (inputChoice == 2)
+    {
+        code = "int x = 5;\n int y = 10;\n int u = x + y;\n int q = x / y;";
+        cout << "Using predefined code:\n" << code << "\n";
+    }
+    else
+    {
+        cout << "Invalid choice.\n";
+        return 1;
+    }
+
+    if (code.empty())
+    {
+        cout << "No code provided.\n";
+        return 1;
+    }
+
+    cout << "Analyzing the code...\n";
+    LexicalAnalyser(code);
+
+    cout << "\n--- Summary ---\n";
+    cout << "Total Keywords: " << total_keywords << "\n";
+    cout << "Total Identifiers: " << total_identifiers << "\n";
+    cout << "Total Operators: " << total_operators << "\n";
+    cout << "Total Special Symbols: " << total_specialOp << "\n";
+    cout << "Total Numbers: " << total_numbers << "\n";
+    cout << "Total Unrecognized Tokens: " << total_unrecognized << "\n";
+
+    return 0;
+}
+
+
+
+
+
+
+6. grammar
+#include <iostream>  // For cin, cout
+#include <map>       // For std::map
+#include <vector>    // For std::vector
+#include <string>    // For std::string
+#include <set>       // For std::set
+#include <utility>   // For std::pair
+
+using namespace std;
+
+map<char, vector<string>> grammar;
+
+bool grammar_check(string &s, char symbol, int &index, set<pair<char, int>> &visited, vector<string> &derivations)
+{
+    if (index > s.size()) return false;
+
+    if (visited.count({symbol, index}))
+        return false;
+
+    visited.insert({symbol, index});
+
+    for (const string &prod : grammar[symbol])
+    {
+        int originalIndex = index; 
+        bool matched = true;
+
+        if (prod.empty())
+        {
+            return index == s.size(); 
+        }
+
+        string current_derivation = string(1, symbol) + " -> " + prod;
+        derivations.push_back(current_derivation);
+
+        for (int i = 0; i < prod.size(); i++)
+        {
+            char c = prod[i];
+
+            if (c == 'S') 
+            {
+                if (!grammar_check(s, 'S', index, visited, derivations))
+                {
+                    matched = false;
+                    break;
+                }
+            }
+            else if (index < s.size() && c == s[index])
+            {
+                index++; 
+            }
+            else
+            {
+                matched = false; 
+                break;
+            }
+        }
+
+        if (matched && index == s.size()) 
+        {
+            return true;
+        }
+
+        index = originalIndex; 
+        derivations.pop_back(); 
+    }
+
+    return false; 
+}
+
+int main()
+{
+    grammar['S'] = {"aS", "bS", ""}; 
+
+    bool choice;
+    cout << "Enter 0 for pre-defined data and 1 for user-defined: ";
+    cin >> choice;
+
+    string input;
+    cin.ignore();
+
+    if (choice)
+    {
+        cout << "Enter string: ";
+        getline(cin, input);
+    }
+    else
+    {
+        input = "aab"; 
+    }
+
+    int index = 0; 
+    set<pair<char, int>> visited;
+    vector<string> derivations; 
+    
+    if (grammar_check(input, 'S', index, visited, derivations)) 
+    {
+        cout << "Accepted" << endl; 
+        
+        cout << "Derivations used to generate the string:\n";
+        for (auto it = derivations.begin(); it != derivations.end(); ++it)
+        {
+            cout << *it << endl; 
+        }
+        cout << string(1, 'S') + " -> " + input; 
+    }
+    else
+    {
+        cout << "Not Accepted" << endl; 
+        cout << "The string contains invalid characters or doesn't follow the grammar rules." << endl;
+    }
+
+    return 0;
+}
+
+
+
+
+
+7. symbol table
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <vector>
+#include <cctype>
+using namespace std;
+
+// Symbol class for the symbol table
+class Symbol
+{
+public:
+    string identifier;
+    string dataType;
+    string scope;
+
+    Symbol(string id, string type, string sc) : identifier(id), dataType(type), scope(sc) {}
+
+    void display() const
+    {
+        cout << "| " << setw(13) << identifier << " | " << setw(13) << dataType << " | " << setw(13) << scope << " |\n";
+    }
+};
+
+// Global counters
+int total_keywords = 0;
+int total_identifiers = 0;
+int total_operators = 0;
+int total_specialOp = 0;
+int total_numbers = 0;
+int total_unrecognized = 0;
+
+// Symbol table
+vector<Symbol> symbolTable;
+
+// Helper functions
+bool isArithmeticOperator(char c) { return (c == '+' || c == '-' || c == '/' || c == '*' || c == '%'); }
+bool isMultiArithmeticOperator(const string &op) { return (op == "++" || op == "--" || op == "+=" || op == "-=" || op == "*=" || op == "/=" || op == "%="); }
+bool isLogicalOperator(char c) { return (c == '&' || c == '|' || c == '!'); }
+bool isMultiLogicalOperator(const string &op) { return (op == "&&" || op == "||"); }
+bool isRelationalOperator(char c) { return (c == '<' || c == '>'); }
+bool isMultiRelationalOperator(const string &op) { return (op == "==" || op == "<=" || op == ">="); }
+bool isBitwiseOperator(char c) { return (c == '^' || c == '~'); }
+bool isKeyword(const string &op)
+{
+    return (op == "else" || op == "if" || op == "while" || op == "do" || op == "float" || op == "int" ||
+            op == "string" || op == "char" || op == "continue" || op == "break" || op == "double" ||
+            op == "short" || op == "struct" || op == "long" || op == "for" || op == "printf" || op == "scanf");
+}
+bool isIdentifier(const string &token)
+{
+    if (isdigit(token[0]))
+        return false;
+    for (char c : token)
+    {
+        if (!isalnum(c) && c != '_')
+            return false;
+    }
+    return true;
+}
+bool isNumber(const string &token)
+{
+    int dot_count = 0;
+    for (char c : token)
+    {
+        if (c == '.')
+        {
+            dot_count++;
+            if (dot_count > 1)
+                return false;
+        }
+        else if (!isdigit(c))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+bool isSpecialSymbol(char c) { return (c == ',' || c == ';'); }
+bool isAssignment(char c) { return (c == '='); }
+
+// Function to check if an identifier already exists in the symbol table
+bool isInSymbolTable(const string &identifier)
+{
+    for (const auto &symbol : symbolTable)
+    {
+        if (symbol.identifier == identifier)
+            return true;
+    }
+    return false;
+}
+
+void LexicalAnalyser(const string &line)
+{
+    string token, currentDataType = "unknown";
+    string scope = "global"; // Simplified scope handling
+
+    for (size_t i = 0; i < line.length(); ++i)
+    {
+        // Skip whitespace
+        if (isspace(line[i]))
+            continue;
+
+        // Handle separators (comma and semicolon)
+        if (line[i] == ',' || line[i] == ';')
+        {
+            cout << line[i] << " is a statement terminator\n";
+            total_specialOp++;
+            continue;
+        }
+
+        // Handle operators and assignment
+        if (isArithmeticOperator(line[i]) || isLogicalOperator(line[i]) || isRelationalOperator(line[i]) || isBitwiseOperator(line[i]))
+        {
+            string op(1, line[i]);
+            if ((i + 1 < line.length()) && (isArithmeticOperator(line[i + 1]) || line[i + 1] == '=' || line[i + 1] == line[i]))
+            {
+                op += line[i + 1]; // Handle multi-character operators like +=, ++
+                i++;
+            }
+            if (isMultiArithmeticOperator(op) || isMultiLogicalOperator(op) || isMultiRelationalOperator(op))
+            {
+                cout << op << " is an operator\n";
+                total_operators++;
+            }
+            else
+            {
+                cout << op << " is a single-character operator\n";
+                total_operators++;
+            }
+            continue;
+        }
+
+        // Handle assignment operator
+        if (isAssignment(line[i]) && (i + 1 < line.length()) && line[i + 1] == '=')
+        {
+            cout << "== is a relational operator\n";
+            total_operators++;
+            i++;
+            continue;
+        }
+        else if (isAssignment(line[i]))
+        {
+            cout << line[i] << " is an assignment operator\n";
+            total_operators++;
+            continue;
+        }
+
+        // Handle tokens (identifiers, keywords, numbers)
+        token.clear();
+        while (i < line.length() && !isspace(line[i]) && !isArithmeticOperator(line[i]) && !isLogicalOperator(line[i]) &&
+               !isRelationalOperator(line[i]) && !isBitwiseOperator(line[i]) && line[i] != ',' && line[i] != ';')
+        {
+            token += line[i];
+            ++i;
+        }
+        --i;
+
+        if (isKeyword(token))
+        {
+            cout << token << " is a keyword\n";
+            total_keywords++;
+            currentDataType = token; // Update the current data type
+        }
+        else if (isIdentifier(token))
+        {
+            cout << token << " is an identifier\n";
+            total_identifiers++;
+
+            // Add identifier to the symbol table if not already present
+            if (!isInSymbolTable(token))
+            {
+                symbolTable.emplace_back(token, currentDataType, scope);
+            }
+        }
+        else if (isNumber(token))
+        {
+            cout << token << " is a number\n";
+            total_numbers++;
+        }
+        else
+        {
+            cout << token << " is unrecognized\n";
+            total_unrecognized++;
+        }
+    }
+}
+
+int main()
+{
+    string code;
+    int inputChoice;
+
+    cout << "Choose input method:\n";
+    cout << "1. User-defined input\n";
+    cout << "2. Predefined input\n";
+    cout << "Enter your choice: ";
+    cin >> inputChoice;
+    cin.ignore(); // Clear input buffer
+
+    if (inputChoice == 1)
+    {
+        cout << "Enter the code to analyze (terminate with an empty line):\n";
+        string line;
+        while (true)
+        {
+            getline(cin, line);
+            if (line.empty())
+                break;
+            code += line + '\n';
+        }
+    }
+    else if (inputChoice == 2)
+    {
+        code = "int x = 5;\n int y = 15;\n int z = x+y;\n int k = x/y";
+        cout << "Using predefined code:\n" << code << "\n";
+    }
+    else
+    {
+        cout << "Invalid choice.\n";
+        return 1;
+    }
+
+    if (code.empty())
+    {
+        cout << "No code provided.\n";
+        return 1;
+    }
+
+    cout << "Analyzing the code...\n";
+    LexicalAnalyser(code);
+
+    // Display symbol table
+    cout << "\n--- Symbol Table ---\n";
+    cout << "+---------------+---------------+---------------+\n";
+    cout << "| Identifier    | Data Type     | Scope         |\n";
+    cout << "+---------------+---------------+---------------+\n";
+    for (const auto &symbol : symbolTable)
+    {
+        symbol.display();
+    }
+    cout << "+---------------+---------------+---------------+\n";
+
+    // Display summary
+    cout << "\n--- Summary ---\n";
+    cout << "Total Keywords: " << total_keywords << "\n";
+    cout << "Total Identifiers: " << total_identifiers << "\n";
+    cout << "Total Operators: " << total_operators << "\n";
+    cout << "Total Special Symbols: " << total_specialOp << "\n";
+    cout << "Total Numbers: " << total_numbers << "\n";
+    cout << "Total Unrecognized Tokens: " << total_unrecognized << "\n";
+
+    return 0;
+}
+
+
+
+
+
+
+8. typecheck
+#include <iostream>
+#include <sstream>
+#include <vector>
+using namespace std;
+
+bool isInteger(const string &val)
+{
+    for (char c : val)
+    {
+        if (!isdigit(c) && c != '-' && c != '+')
+            return false;
+    }
+    try
+    {
+        stoi(val);
+        return true;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+bool isFloat(const string &val)
+{
+    istringstream iss(val);
+    float f;
+    char c;
+    if (!(iss >> f) || (iss >> c))
+        return false;
+    return true;
+}
+
+bool isDouble(const string &val)
+{
+    istringstream iss(val);
+    double d;
+    char c;
+    if (!(iss >> d) || (iss >> c))
+        return false;
+    return true;
+}
+
+bool isChar(const string &val)
+{
+    return val.length() == 1 && isprint(val[0]);
+}
+
+bool isString(const string &val)
+{
+   return !val.empty() && val.find('"') == string::npos && val.find('\'') == string::npos;
+}
+
+bool isBool(const string &val)
+{
+    return val == "true" || val == "false";
+}
+
+int main()
+{
+    int n;
+    cout << "Enter the number of variables: ";
+    cin >> n;
+    cin.ignore(); // To ignore the newline character after reading n
+
+    while (n--)
+    {
+        string var, type, val;
+        cout << "Enter the name of variable: ";
+        getline(cin, var);
+        cout << "Enter the type of variable: ";
+        getline(cin, type);
+        cout << "Enter the value of variable: ";
+        getline(cin, val);
+
+        if (type == "int")
+        {
+            if (isInteger(val))
+                cout << var << " is an integer";
+            else
+                cout << var << " is not an integer";
+        }
+        else if (type == "float")
+        {
+            if (isFloat(val))
+                cout << var << " is a floating point decimal";
+            else
+                cout << var << " is not a floating point decimal";
+        }
+        else if (type == "double")
+        {
+            if (isDouble(val))
+                cout << var << " is a double value";
+            else
+                cout << var << " is not a double value";
+        }
+        else if (type == "char")
+        {
+            if (isChar(val))
+                cout << var << " is a character";
+            else
+                cout << var << " is not a character";
+        }
+        else if (type == "string")
+        {
+            if (isString(val))
+                cout << var << " is a string";
+            else
+                cout << var << " is not a string";
+        }
+        else if (type == "bool")
+        {
+            if (isBool(val))
+                cout << var << " is a boolean value";
+            else
+                cout << var << " is not a boolean value";
+        }
+        else
+        {
+            cout << "Undefined datatype";
+        }
+        cout << endl;
+    }
+    return 0;
+}
